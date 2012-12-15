@@ -1,7 +1,7 @@
 utils = require './extern/utils'
 Module = require './extern/module'
 
-OAuth = exports? and exports or @OAuth = {}
+OAuth = {} unless OAuth?
 
 OAuth.Token = require './token'
 

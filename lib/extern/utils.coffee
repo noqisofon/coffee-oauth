@@ -1,3 +1,4 @@
+
 Function::attribute = (prop, desc) ->
     Object.defineProperty @prototype, prop, desc
 
@@ -8,6 +9,12 @@ Function::getter = (prop, get) ->
 
 Function::setter = (prop, set) ->
     Object.defineProperty @prototype, prop, { set, configurable: yes }
+
+
+Array::include = (value) ->
+    for i in this
+        return true if this[i] == value
+    false
 
 
 extend = (obj, mixin) ->

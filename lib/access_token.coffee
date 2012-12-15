@@ -1,7 +1,7 @@
 utils = require './extern/utils'
 Module = require './extern/module'
 
-OAuth = exports? and exports or @OAuth = {}
+OAuth = {} unless OAuth?
 
 OAuth.ConsumerToken = require './consumer_token'
 
@@ -12,4 +12,6 @@ class OAuth.AccessToken extends OAuth.ConsumerToken
         @_consumer = consumer
         @_params = {}
 
-module.exports.AccessToken = OAuth.AccessToken
+
+exports = OAuth.AccessToken
+module.exports = OAuth.AccessToken

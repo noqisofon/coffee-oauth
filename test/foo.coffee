@@ -1,3 +1,0 @@
-
-
-exports.greeting = "Hello, World!"

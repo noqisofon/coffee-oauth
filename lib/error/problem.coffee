@@ -1,8 +1,6 @@
 utils = require '../extern/utils'
 
-
-OAuth = exports? and exports or @OAuth = {}
-
+OAuth = {} unless OAuth?
 OAuth.Unauthorized = require './unauthorized'
 
 
@@ -22,5 +20,5 @@ class OAuth.Problem extends OAuth.Unauthorized
         else
             @_problem
 
-exports.Problem = OAuth.Problem
-module.exports.Problem = OAuth.Problem
+exports = OAuth.Problem
+module.exports = OAuth.Problem

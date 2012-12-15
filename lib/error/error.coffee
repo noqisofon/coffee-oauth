@@ -1,12 +1,11 @@
 utils = require '../extern/utils'
 
-
-OAuth = exports? and exports or @OAuth = {}
+OAuth = {} unless OAuth?
 
 
 class OAuth.Error extends Error
     
 
 
-exports.Error = OAuth.Error
-module.exports.Error = OAuth.Error
+exports = OAuth.Error
+module.exports = OAuth.Error

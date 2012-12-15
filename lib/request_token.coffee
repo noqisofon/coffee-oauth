@@ -27,5 +27,5 @@ class OAuth.RequestToken extends OAuth.ConsumerToken
         OAuth.AccessToken.fromHash this.consumer, response
 
 
-exports.RequestToken = OAuth.RequestToken
-module.exports.RequestToken = OAuth.RequestToken
+exports = OAuth.RequestToken
+module.exports = OAuth.RequestToken

@@ -1,7 +1,8 @@
 utils = require './extern/utils'
 URI = require './extern/uri'
+Net = require './extern/net/http'
 
-OAuth = exports? and exports or @OAuth = {}
+OAuth = {} unless OAuth?
 
 OAuth.AccessToken = require './access_token'
 OAuth.RequestToken = require './request_token'
@@ -29,6 +30,41 @@ merge = (me, another) ->
         else
             opts[key] = another[key]
     opts
+
+
+createHttpRequest = (http_method, path, args...) ->
+    if typeof args[args.length - 1] is 'function'
+        #is_block_given = true
+        block = args.pop()
+    else
+        #is_block_given = false
+        block = null
+
+    http_method = http_method.toUpperCase()
+    if http_method in [ 'POST', 'PUT' ]
+        data = arg.shift()
+
+    headers = if typeof args[0] == 'object' then args.shift() else {}
+
+    if http_method == 'POST'
+        request = new Net.HTTP.Post path, headers
+    else if http_method == 'PUT'
+        request = new Net.HTTP.Put path, headers
+    else if http_method == 'GET'
+        request = new Net.HTTP.Get path, headers
+    else if http_method == 'DELETE'
+        request = new Net.HTTP.Delete path, headers
+    else if http_method == 'HEAD'
+        request = new Net.HTTP.Head path, headers
+    else
+        throw new ArgumentError "Don't know how to handle http_method: #{http_method}"
+
+    if typeof data == 'object'
+        request.setFormData data
+    else if data?
+        request.body = data.toString()
+    request
+    
 
 
 class OAuth.Consumer
@@ -74,7 +110,7 @@ class OAuth.Consumer
             #is_block_given = false
             block = null
 
-        response = getTokenRequest( this.getHttpMethod(), access_token_url, request_token, request_options, args, block )
+        response = this.tokenRequest( this.getHttpMethod(), access_token_url, request_token, request_options, args, block )
         OAuth.AccessToken.fromHash this, response
 
     getRequestToken: (request_options = {}, args...) ->
@@ -89,9 +125,9 @@ class OAuth.Consumer
 
         request_token_url = if this.isRequestTokenURL() then this.getRequestTokenURL() else this.getRequestTokenPath()
         if is_block_given
-            response = tokenRequest( this.getHttpMethod(), request_token_url, null, request_options, args, block )
+            response = this.tokenRequest( this.getHttpMethod(), request_token_url, null, request_options, args, block )
         else
-            response = tokenRequest( this.getHttpMethod(), request_token_url, null, request_options, args )
+            response = this.tokenRequest( this.getHttpMethod(), request_token_url, null, request_options, args )
 
         OAuth.RequestToken.fromHash this, response
 
@@ -149,7 +185,7 @@ class OAuth.Consumer
     getSignatureBaseString: (request, token = null, request_options = {}) ->
         request.getSignatureBaseString @_http, this, token, merge( @_options, request_options )
 
-    tokenRequest: (http_method, path, token = null, request, args...) ->
+    tokenRequest: (http_method, path, token = null, request_options = {}, args...) ->
         if typeof args[args.length - 1] is 'function'
             is_block_given = true
             block = args.pop()
@@ -186,5 +222,5 @@ class OAuth.Consumer
             @_uri = URI.parse this.site
         
 
-exports.Consumer = OAuth.Consumer
-module.exports.Consumer = OAuth.Consumer
+exports = OAuth.Consumer
+module.exports = OAuth.Consumer

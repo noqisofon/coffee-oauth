@@ -7,4 +7,5 @@ OAuth =
     RESERVED_CHARACTERS: /[^a-zA-Z0-9\-\.\_\~]/
 
 
+exports = OAuth
 module.exports = OAuth
