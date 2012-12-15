@@ -1,14 +1,13 @@
-utils = require 'utils'
+utils = require './extern/utils'
+URI = require './extern/uri'
 
 OAuth = exports? and exports or @OAuth = {}
 
-OAuth.AccessToken = require 'access_token'
-OAuth.RequestToken = require 'request_token'
-OAuth.Header = require 'header'
-OAuth.Problem = require 'error/problem'
-OAuth.Unathorized = require 'error/unathorized'
-
-URI = require 'uri'
+OAuth.AccessToken = require './access_token'
+OAuth.RequestToken = require './request_token'
+OAuth.Helper = require './helper'
+OAuth.Problem = require './error/problem'
+OAuth.Unathorized = require './error/unauthorized'
 
 
 default_options =
@@ -128,8 +127,8 @@ class OAuth.Consumer
             for h in headers
                 temp_header = h if /^OAuth/.test h
             if temp_header.length > 0 and /oauth_problem/.test temp_header[0]
-                params = OAuth.Header.parseHeader temp_header[0]
-                throw new OAuth.Problem params.delete "oauth_problem", response, params
+                params = OAuth.Helper.parseHeader temp_header[0]
+                throw new OAuth.Problem params.delete( "oauth_problem" ), response, params 
         response
 
     getRequestEndpoint: ->
@@ -187,4 +186,5 @@ class OAuth.Consumer
             @_uri = URI.parse this.site
         
 
-exports.OAuth.Consumer = OAuth.Consumer
+exports.Consumer = OAuth.Consumer
+module.exports.Consumer = OAuth.Consumer

@@ -3,11 +3,11 @@ Function::attribute = (prop, desc) ->
 
 
 Function::getter = (prop, get) ->
-    Object.definedProperty @prototype, prop, { get, configurable: yes }
+    Object.defineProperty @prototype, prop, { get, configurable: yes }
 
 
 Function::setter = (prop, set) ->
-    Object.definedProperty @prototype, prop, { set, configurable: yes }
+    Object.defineProperty @prototype, prop, { set, configurable: yes }
 
 
 extend = (obj, mixin) ->

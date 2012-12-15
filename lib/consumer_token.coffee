@@ -1,17 +1,12 @@
-utils = require 'utils'
-Module = require 'module'
+utils = require './extern/utils'
+Module = require './extern/module'
 
 OAuth = exports? and exports or @OAuth = {}
 
-OAuth.Token = require 'token'
+OAuth.Token = require './token'
 
 
 class OAuth.ConsumerToken extends OAuth.Token
-    @fromHash: (consumer, hash) ->
-        token = new ConsumerToken( consumer, hash["oauth_token"], hash["oauth_token_secret"] )
-        token.params = hash
-        token
-
     constructor: (consumer, token = "", secret = "") ->
         super token, secret
         @_consumer = consumer
@@ -33,4 +28,10 @@ class OAuth.ConsumerToken extends OAuth.Token
     sign: (request, options = {}) ->
         @_consumer.sign request, self, options
 
-exports.OAuth.ConsumerToken = OAuth.ConsumerToken
+    
+    @fromHash: (consumer, hash) ->
+        token = new ConsumerToken( consumer, hash["oauth_token"], hash["oauth_token_secret"] )
+        token.params = hash
+        token
+
+module.exports.ConsumerToken = OAuth.ConsumerToken
