@@ -1,7 +1,22 @@
 {
-    "name": "coffee-oauth",
-    "version": "0.0.1",
-    "dependencies": {
-        "coffee-script": "~1.4.0"
-    }
+  "name": "coffee-oauth",
+  "version": "0.0.1",
+  "description": "rubygems oauth is transplanted by coffee-script.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine-node ./spec/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noqisofon/coffee-oauth.git"
+  },
+  "keywords": [
+    "oauth",
+    "coffee-script",
+    "library"
+  ],
+  "author": "ned rihine",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "2a08b539c5beb5ebe91b1ac5e0ec15edc4947181"
 }
