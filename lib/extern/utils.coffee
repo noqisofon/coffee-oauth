@@ -1,3 +1,15 @@
+Object::clone = -> JSON.parse JSON.stringify( this )
+
+
+Object::merge = (another) ->
+    opts = this.clone()
+    #opts[key] = this[key] for key of this
+
+    another = another.clone()
+    for key of another
+        opts[key] = another[key] unless opts[key]?
+    opts
+
 
 Function::attribute = (prop, desc) ->
     Object.defineProperty @prototype, prop, desc

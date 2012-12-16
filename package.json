@@ -4,7 +4,7 @@
   "description": "rubygems oauth is transplanted by coffee-script.",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine-node ./spec/"
+    "test": "jasmine-node --verbose --coffee ./spec/"
   },
   "repository": {
     "type": "git",

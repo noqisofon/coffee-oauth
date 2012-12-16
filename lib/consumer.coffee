@@ -22,16 +22,6 @@ default_options =
     oauth_version: "1.0"
 
 
-merge = (me, another) ->
-    opts = {}
-    for key in me
-        unless options[key]?
-            opts[key] = me[key]
-        else
-            opts[key] = another[key]
-    opts
-
-
 createHttpRequest = (http_method, path, args...) ->
     if typeof args[args.length - 1] is 'function'
         #is_block_given = true
@@ -68,11 +58,11 @@ createHttpRequest = (http_method, path, args...) ->
 
 
 class OAuth.Consumer
-    constructor: (consumer_key, @consumer_secret, options = {}) ->
+    constructor: (consumer_key, consumer_secret, options = {}) ->
         @_key = consumer_key
         @_secret = consumer_secret
 
-        @_options = merge default_options, options
+        @_options = default_options.merge options
 
     @getter 'key', -> @_key
 
@@ -134,6 +124,9 @@ class OAuth.Consumer
     getHttpMethod: ->
         @_http_method or= @_options["http_method"] or "post"
 
+    getHttp: ->
+        @_http or= new Net.HTTP( @_uri.host, @_uri.port )
+
     getProxy: -> @_options["proxy"]
 
     request: (http_method, path, token = null, request_options = {}, args...) ->
@@ -145,7 +138,7 @@ class OAuth.Consumer
             block = null
 
         if /^\//.test path
-            @_http = createHttp path
+            @_http = this.createHttp path
             _uri = URI.parse path
             if _uri.getQuery()?
                 path = "#{_uri.getPath()}#{_uri.getQuery()}"
@@ -156,7 +149,7 @@ class OAuth.Consumer
 
         return null if is_block_given and block( request ) == "done"
 
-        response = this.getHttpRequest().request request
+        response = @_http.request request
 
         if !( headers = response.toHash()["www-authenticate"] )?
             temp_header = []
@@ -173,7 +166,7 @@ class OAuth.Consumer
 
     getRequestTokenPath: -> @_options["request_token_path"]
 
-    getRequestTokenURL: -> @_options["request_token_url"]
+    getRequestTokenURL: -> @_options["request_token_url"] or @_options["site"] + @_options["request_token_path"]
 
     isRequestTokenURL: -> @_options["request_token_url"]?
 
@@ -214,7 +207,7 @@ class OAuth.Consumer
         else
             response.error
 
-    uri: (custom_uri = null) ->
+    getUri: (custom_uri = null) ->
         if custom_uri?
             @_uri = custom_uri
             @_http = this.createHttp()
