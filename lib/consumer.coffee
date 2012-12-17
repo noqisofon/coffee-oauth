@@ -32,7 +32,7 @@ createHttpRequest = (http_method, path, args...) ->
 
     http_method = http_method.toUpperCase()
     if http_method in [ 'POST', 'PUT' ]
-        data = arg.shift()
+        data = args.shift()
 
     headers = if typeof args[0] == 'object' then args.shift() else {}
 
@@ -54,8 +54,36 @@ createHttpRequest = (http_method, path, args...) ->
     else if data?
         request.body = data.toString()
     request
-    
 
+
+createHttp = (that, _url = null) ->
+    _url = that.getRequestEndPoint() if that.getRequestEndPoint()?
+
+    if _url? or /^\//.test _url
+        our_uri = URI.parse that.site
+    else
+        our_uri = URI.parse _url
+
+    # unless that.proxy?
+    http_object = new Net.HTTP our_uri.host, our_uri.port
+    # else
+    #     proxy_url = URI.parse that.proxy
+
+    # http_object.use_ssl = our_uri.scheme == 'https'
+
+    # if that.options["ca_file"] or CA_FILE
+    #     http_object.ca_file = that.options["ca_file"] or CA_FILE
+    #     http_object.verify_mode = OpenSSL.SSL.VERIFY_PEER
+    #     http_object.verify_depth = 5
+    # else
+    #     http_object.verify_mode = OpenSSL.SSL.VERIFY_MODE
+
+    http_object.openTimeout = that.options['timeout'] or 30
+    http_object.readTimeout = http_object.openTimeout
+    http_object.openTimeout = that.options['open_timeout'] unless that.options['open_timeout']?
+
+    http_object
+        
 
 class OAuth.Consumer
     constructor: (consumer_key, consumer_secret, options = {}) ->
@@ -100,7 +128,7 @@ class OAuth.Consumer
             #is_block_given = false
             block = null
 
-        response = this.tokenRequest( this.getHttpMethod(), access_token_url, request_token, request_options, args, block )
+        response = this.tokenRequest( this.httpMethod, access_token_url, request_token, request_options, args, block )
         OAuth.AccessToken.fromHash this, response
 
     getRequestToken: (request_options = {}, args...) ->
@@ -115,13 +143,13 @@ class OAuth.Consumer
 
         request_token_url = if this.isRequestTokenURL() then this.getRequestTokenURL() else this.getRequestTokenPath()
         if is_block_given
-            response = this.tokenRequest( this.getHttpMethod(), request_token_url, null, request_options, args, block )
+            response = this.tokenRequest( this.httpMethod, request_token_url, null, request_options, args, block )
         else
-            response = this.tokenRequest( this.getHttpMethod(), request_token_url, null, request_options, args )
+            response = this.tokenRequest( this.httpMethod, request_token_url, null, request_options, args )
 
         OAuth.RequestToken.fromHash this, response
 
-    getHttpMethod: ->
+    @getter 'httpMethod', ->
         @_http_method or= @_options["http_method"] or "post"
 
     getHttp: ->
@@ -138,12 +166,12 @@ class OAuth.Consumer
             block = null
 
         if /^\//.test path
-            @_http = this.createHttp path
+            @_http = createHttp this, path
             _uri = URI.parse path
-            if _uri.getQuery()?
-                path = "#{_uri.getPath()}#{_uri.getQuery()}"
+            if _uri.query?
+                path = "#{_uri.path}#{_uri.query}"
             else
-                path = "#{_uri.getPath()}"
+                path = "#{_uri.path}"
 
         request = this.createSignedRequest http_method, path, token, request_options, args
 
@@ -160,7 +188,7 @@ class OAuth.Consumer
                 throw new OAuth.Problem params.delete( "oauth_problem" ), response, params 
         response
 
-    getRequestEndpoint: ->
+    getRequestEndPoint: ->
         return null unless @_options["request_endpoint"]?
         @_options["request_endpoint"].toString()
 
@@ -210,7 +238,7 @@ class OAuth.Consumer
     getUri: (custom_uri = null) ->
         if custom_uri?
             @_uri = custom_uri
-            @_http = this.createHttp()
+            @_http = createHttp()
         else
             @_uri = URI.parse this.site
         

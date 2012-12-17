@@ -1,8 +1,8 @@
 utils = require '../utils'
 Module = require '../module'
+URI = require '../uri'
 
 Net = {}
-Net.HTTP = {}
 
 Net.HTTPHeader =
     addField: (key, val) -> @_headers[key] = val
@@ -37,6 +37,27 @@ class Net.HTTPRequest extends Module
     @getter 'method', -> @_method
 
     bodyExists: -> @_body?
+
+
+class Net.HTTP
+    constructor: (@_addess, @_port = 80, @_proxy_addr = null, @_proxy_port = null, @_proxy_user = null, @_proxy_pass = null) ->
+
+    #@portForm: (uri, params) ->
+
+    @getter 'address', -> @_address
+
+    @getter 'port', -> @_port
+
+    @attribute 'openTimeout',
+        get: -> @_open_timeout
+        set: (value) -> @_open_timeout
+
+    @attribute 'readTimeout',
+        get: -> @_read_timeout
+        set: (value) -> @_read_timeout
+
+    request: (request_object) ->
+        
 
 
 class Net.HTTP.Post extends Net.HTTPRequest

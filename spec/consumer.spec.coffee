@@ -6,7 +6,7 @@ describe "OAuth.Consumer", ->
     consumer = null
 
     beforeEach ->
-        consumer = new OAuth.Consumer( 'YOUR CONSUMER KEY', 'YOUR CONSUMER SECRET', { site: 'http://api.twitter.com' } )
+        consumer = new OAuth.Consumer( 'vDqmnjgpz8h5sFbeWAsMTg', 'lz5NKRhIDgs6togZU7DhH69A4kskQewEWX81frcUumE', { site: 'http://api.twitter.com' } )
 
     it "key プロパティがあるはず。", ->
         expect( consumer.key ).toBeDefined
@@ -20,11 +20,11 @@ describe "OAuth.Consumer", ->
     it "site プロパティがあるはず。", ->
         expect( consumer.site ).toBeDefined
 
-    it "key プロパティは「YOUR CONSUMER KEY」であるはず。", ->
-        expect( consumer.key ).toBe 'YOUR CONSUMER KEY'
+    it "key プロパティは「vDqmnjgpz8h5sFbeWAsMTg」であるはず。", ->
+        expect( consumer.key ).toBe 'vDqmnjgpz8h5sFbeWAsMTg'
 
-    it "secret プロパティは「YOUR CONSUMER KEY」であるはず。", ->
-        expect( consumer.secret ).toBe 'YOUR CONSUMER SECRET'
+    it "secret プロパティは「lz5NKRhIDgs6togZU7DhH69A4kskQewEWX81frcUumE」であるはず。", ->
+        expect( consumer.secret ).toBe 'lz5NKRhIDgs6togZU7DhH69A4kskQewEWX81frcUumE'
 
     it "options プロパティはハッシュであるはず。", ->
         to_s = Object::toString
@@ -32,6 +32,9 @@ describe "OAuth.Consumer", ->
 
     it "site プロパティは「http://api.twitter.com」であるはず。", ->
         expect( consumer.site ).toBe 'http://api.twitter.com'
+
+    it "httpMethod プロパティが返すのは「post」のはず。", ->
+        expect( consumer.httpMethod ).toBe 'post'
 
     it "getAccessTokenPath() が返すのは「/oauth/access_token」のはず。", ->
         expect( consumer.getAccessTokenPath() ).toBe '/oauth/access_token'
@@ -51,9 +54,6 @@ describe "OAuth.Consumer", ->
     it "isAuthorizeURL() が返すのは偽のはず。", ->
         expect( consumer.isAuthorizeURL() ).toBe false
 
-    it "getHttpMethod() が返すのは「post」のはず。", ->
-        expect( consumer.getHttpMethod() ).toBe 'post'
-
     it "getRequestTokenPath() が返すのは「/oauth/request_token」のはず。", ->
         expect( consumer.getRequestTokenPath() ).toBe '/oauth/request_token'
 
@@ -62,3 +62,6 @@ describe "OAuth.Consumer", ->
 
     it "isRequestTokenURL() が返すのは偽のはず。", ->
         expect( consumer.isRequestTokenURL() ).toBe false
+
+    it "getRequestToken() は null 以外を返すはず。", ->
+        expect( consumer.getRequestToken() ).toBeNot null
