@@ -11,6 +11,7 @@ class URI
         @_query = null
 
     @parse: (uri_str) ->
+        return null unless uri_str
         parts = uri_str.split /\//
         if /^https?/.test parts[0]
             scheme = parts[0].substring 0, parts[0].indexOf ':'
@@ -59,7 +60,7 @@ class URI
         
 
     toString: ->
-        [ "#{@_scheme}/", @_host, @_path ].join '/'
+        [ "#{@_scheme}:/", @_host, @_path ].join '/'
         
 
 exports = URI

@@ -2,10 +2,11 @@ Object::clone = -> JSON.parse JSON.stringify( this )
 
 
 Object::merge = (another) ->
-    opts = this.clone()
-    #opts[key] = this[key] for key of this
+    # opts = this.clone()
+    opts = {}
+    opts[key] = this[key] for key of this
 
-    another = another.clone()
+    #another = another.clone()
     for key of another
         opts[key] = another[key] unless opts[key]?
     opts

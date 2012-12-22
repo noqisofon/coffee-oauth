@@ -59,7 +59,7 @@ createHttpRequest = (http_method, path, args...) ->
 createHttp = (that, _url = null) ->
     _url = that.getRequestEndPoint() if that.getRequestEndPoint()?
 
-    if _url? or /^\//.test _url
+    unless _url? or /^\//.test _url
         our_uri = URI.parse that.site
     else
         our_uri = URI.parse _url
@@ -152,10 +152,10 @@ class OAuth.Consumer
     @getter 'httpMethod', ->
         @_http_method or= @_options["http_method"] or "post"
 
-    getHttp: ->
-        @_http or= new Net.HTTP( @_uri.host, @_uri.port )
+    @getter 'http', ->
+        @_http or= createHttp this
 
-    getProxy: -> @_options["proxy"]
+    @getter 'proxy', -> @_options["proxy"]
 
     request: (http_method, path, token = null, request_options = {}, args...) ->
         if typeof args[args.length - 1] is 'function'
@@ -181,8 +181,8 @@ class OAuth.Consumer
 
         if !( headers = response.toHash()["www-authenticate"] )?
             temp_header = []
-            for h in headers
-                temp_header = h if /^OAuth/.test h
+            for header in headers
+                temp_header.push header if /^OAuth/.test header
             if temp_header.length > 0 and /oauth_problem/.test temp_header[0]
                 params = OAuth.Helper.parseHeader temp_header[0]
                 throw new OAuth.Problem params.delete( "oauth_problem" ), response, params 
@@ -198,7 +198,7 @@ class OAuth.Consumer
 
     isRequestTokenURL: -> @_options["request_token_url"]?
 
-    getScheme: -> @_options["scheme"]
+    @getter 'scheme', -> @_options["scheme"]
 
     sign: (request, token = null, request_options = {}) ->
         request.oauth @_http, this, token, merge( @_options, request_options )
@@ -215,8 +215,6 @@ class OAuth.Consumer
             block = null
 
         response = this.request http_method, path, token, request_options, args
-
-        response.code = parseInt response.status
         if 200 <= response.code < 300
             if is_block_given
                 block response.body
